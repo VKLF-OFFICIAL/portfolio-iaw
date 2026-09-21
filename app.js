@@ -1,6 +1,11 @@
 const KIND_LABELS = { code: "Código", image: "Imágenes", video: "Vídeo", pdf: "PDF", doc: "Documentos", archive: "Comprimidos", other: "Otros" };
 const LANGS = { sh: "bash", bash: "bash", ps1: "powershell", bat: "dos", cmd: "dos", py: "python", php: "php", js: "javascript", ts: "typescript", sql: "sql", yml: "yaml", yaml: "yaml", json: "json", html: "xml", htm: "xml", xml: "xml", css: "css", md: "markdown", ini: "ini", cfg: "ini", toml: "ini", conf: "apache", vhost: "apache", htaccess: "apache", java: "java", c: "c", cpp: "cpp", cs: "csharp", go: "go", rb: "ruby", dockerfile: "dockerfile" };
 const MAX_PREVIEW = 60 * 1024;
+const ICONS = {
+  ext: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/>',
+  dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>',
+  chev: '<path d="M6 9l6 6 6-6"/>',
+};
 
 const $ = (id) => document.getElementById(id);
 const state = { units: [], unit: "all", kind: "all", q: "", sort: "desc" };
@@ -20,10 +25,12 @@ function el(tag, attrs = {}, ...children) {
   return node;
 }
 
+const icon = (name) => el("span", { class: "ico", "aria-hidden": "true", html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>` });
+
 async function init() {
   const [site, data] = await Promise.all([
-    fetch("site.json").then((r) => r.json()).catch(() => ({})),
-    fetch("data/tareas.json").then((r) => r.json()).catch(() => ({ units: [] })),
+    fetch("site.json", { cache: "no-cache" }).then((r) => r.json()).catch(() => ({})),
+    fetch("data/tareas.json", { cache: "no-cache" }).then((r) => r.json()).catch(() => ({ units: [] })),
   ]);
   $("nombre").textContent = site.nombre || "Portfolio";
   $("modulo").textContent = site.modulo || "Portfolio";
@@ -49,7 +56,7 @@ function renderUnits() {
   ul.replaceChildren();
   const items = [{ id: "all", title: "todas", count: allTasks().length }, ...state.units.map((u) => ({ id: u.id, title: (u.tag ? u.tag + " " : "") + u.title, count: u.tasks.length }))];
   for (const it of items) {
-    const b = el("button", { type: "button", "aria-pressed": String(state.unit === it.id) }, el("span", {}, it.title), el("span", { class: "n" }, String(it.count)));
+    const b = el("button", { type: "button", title: it.title, "aria-pressed": String(state.unit === it.id) }, el("span", {}, it.title), el("span", { class: "n" }, String(it.count)));
     b.addEventListener("click", () => { state.unit = it.id; renderUnits(); renderList(); });
     ul.append(el("li", {}, b));
   }
@@ -62,7 +69,7 @@ function renderKinds() {
   const kinds = ["all", ...Object.keys(KIND_LABELS).filter((k) => present.has(k))];
   if (kinds.length < 3) return;
   for (const k of kinds) {
-    const b = el("button", { type: "button", "aria-pressed": String(state.kind === k) }, k === "all" ? "Todos" : KIND_LABELS[k]);
+    const b = el("button", { type: "button", class: "btn btn-sm", "aria-pressed": String(state.kind === k) }, k === "all" ? "Todos" : KIND_LABELS[k]);
     b.addEventListener("click", () => { state.kind = k; renderKinds(); renderList(); });
     box.append(b);
   }
@@ -98,7 +105,7 @@ function rowCells(t) {
   return [
     el("span", { class: "t-date" }, fmtDate(t.date), el("span", { class: "t-unit", title: t.unit.title }, t.unit.tag || t.unit.title)),
     el("span", { class: "t-title" }, t.title, t.summary ? el("span", { class: "t-sum" }, t.summary) : null),
-    el("span", { class: "t-kinds" }, ...kinds.map((k) => el("span", { class: k === "pdf" ? "chip chip-pdf" : "chip" }, KIND_LABELS[k]))),
+    el("span", { class: "t-kinds" }, ...kinds.map((k) => k === "pdf" ? el("span", { class: "chip chip-pdf" }, "PDF", icon("ext")) : el("span", { class: "chip" }, KIND_LABELS[k]))),
   ];
 }
 
@@ -125,11 +132,12 @@ function pdfRow(t, pdf) {
       el("a", { class: "t-row", href: pdf.url, target: "_blank", rel: "noopener", title: "Abrir el PDF en una pestaña nueva" }, ...rowCells(t))));
   if (!rest.length && !t.readme) return row;
 
-  const btn = el("button", { type: "button", class: "t-toggle", "aria-expanded": "false" }, "Detalles");
+  const label = el("span", {}, "Detalles");
+  const btn = el("button", { type: "button", class: "btn btn-sm t-toggle", "aria-expanded": "false" }, label, icon("chev"));
   btn.addEventListener("click", () => {
     const open = btn.getAttribute("aria-expanded") === "true";
     btn.setAttribute("aria-expanded", String(!open));
-    btn.textContent = open ? "Detalles" : "Ocultar";
+    label.textContent = open ? "Detalles" : "Ocultar";
     let body = row.querySelector(".task-body");
     if (!body) row.append((body = taskBody(t, rest)));
     body.hidden = open;
@@ -149,8 +157,8 @@ function fileBlock(f) {
   const head = el("div", { class: "file-head" },
     el("span", { class: "file-name" }, f.name, el("span", {}, fmtSize(f.size))),
     el("span", { class: "file-actions" },
-      el("a", { href: f.url, target: "_blank", rel: "noopener" }, "Abrir"),
-      el("a", { href: f.url, download: f.name }, "Descargar")));
+      el("a", { class: "btn btn-sm", href: f.url, target: "_blank", rel: "noopener" }, icon("ext"), "Abrir"),
+      el("a", { class: "btn btn-sm", href: f.url, download: f.name }, icon("dl"), "Descargar")));
   const block = el("div", { class: "file" }, head);
 
   if (f.kind === "image") block.append(el("img", { src: f.url, alt: f.name, loading: "lazy" }));
@@ -179,20 +187,5 @@ function openFromHash() {
   node.scrollIntoView({ block: "start" });
 }
 
-function initTheme() {
-  const btn = $("theme");
-  const apply = (dark) => {
-    document.documentElement.dataset.theme = dark ? "dark" : "light";
-    btn.textContent = dark ? "Modo claro" : "Modo oscuro";
-  };
-  apply(document.documentElement.dataset.theme === "dark");
-  btn.addEventListener("click", () => {
-    const dark = document.documentElement.dataset.theme !== "dark";
-    apply(dark);
-    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch {}
-  });
-}
-
-initTheme();
 
 init();

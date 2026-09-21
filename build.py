@@ -9,6 +9,7 @@ Opcional dentro de cada carpeta de tarea:
     info.json   {"titulo": "...", "fecha": "2026-09-21", "descripcion": "..."}
     README.md   texto que se muestra al abrir la tarea
 """
+import hashlib
 import json
 import re
 import subprocess
@@ -153,6 +154,16 @@ def build_unit(folder: Path) -> dict:
     }
 
 
+def stamp_assets():
+    """Añade ?v=<hash> a style.css y app.js para que el navegador no use copias antiguas."""
+    index = ROOT / "index.html"
+    ver = hashlib.md5(b"".join((ROOT / f).read_bytes() for f in ("app.js", "style.css"))).hexdigest()[:8]
+    html = index.read_bytes().decode("utf-8")
+    new = re.sub(r'(href="style\.css|src="app\.js)(\?v=\w+)?"', lambda m: f'{m.group(1)}?v={ver}"', html)
+    if new != html:
+        index.write_bytes(new.encode("utf-8"))
+
+
 def main():
     TAREAS.mkdir(exist_ok=True)
     units = [
@@ -160,6 +171,7 @@ def main():
         for d in sorted(TAREAS.iterdir(), key=lambda p: p.name.lower())
         if d.is_dir() and not d.name.startswith(".")
     ]
+    stamp_assets()
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps({"units": units}, ensure_ascii=False, indent=1), encoding="utf-8")
     total = sum(len(u["tasks"]) for u in units)
