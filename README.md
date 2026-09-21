@@ -35,6 +35,18 @@ La fecha de la tarea es la de hoy.
 Un archivo suelto dentro de una unidad (sin carpeta) cuenta como una tarea.
 Para crear una unidad nueva, crea una carpeta en `tareas/` con nombre `UD2-Nombre-de-la-unidad`.
 
+## Borrar tareas o un tema
+
+Haz doble clic en **`borrar.bat`** (o usa el acceso directo del Escritorio). Te pregunta:
+
+1. ¿Qué borrar? `T` = tareas, `M` = un tema entero con todas sus tareas.
+2. El tema (lista numerada).
+3. Si son tareas: cuáles (un número, varios separados por comas como `1,3`, o `todas`).
+4. Confirmación: hay que escribir `SI`. Con Enter se cancela y no se borra nada.
+
+Después lo borra de tu carpeta y lo publica. Si un tema se queda sin tareas, se elimina también.
+Lo borrado sigue existiendo en el historial de git de GitHub.
+
 ## Ver la web en tu PC
 
 ```
