@@ -116,6 +116,11 @@ try {
         else { Write-Host 'No encuentro un archivo .pdf en esa ruta. Prueba otra vez.' -ForegroundColor Yellow }
     }
 
+    $grande = @($pdfs | ForEach-Object { (Get-Item -LiteralPath $_).Length } | Where-Object { $_ -gt 100MB })
+    if ($grande) { throw 'GitHub no admite archivos de más de 100 MB. Comprime el PDF antes de subirlo.' }
+    $medio = @($pdfs | ForEach-Object { (Get-Item -LiteralPath $_).Length } | Where-Object { $_ -gt 50MB })
+    if ($medio) { Write-Host 'Aviso: el PDF pasa de 50 MB. GitHub lo acepta pero avisa; conviene comprimirlo.' -ForegroundColor Yellow }
+
     # 5. Crear la tarea
     $carpeta = Join-Path (Join-Path $tareas $carpetaTema) "$Fecha-$(Slug $Titulo)"
     if (Test-Path $carpeta) { throw "Ya existe una tarea con ese nombre y fecha: $carpeta" }

@@ -167,7 +167,7 @@ body {
 .file pre code { font: 400 0.88rem/1.55 var(--mono); padding: 1rem 1.1rem; }
 .file img, .file video { display: block; max-width: 100%; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
 .file iframe { width: 100%; height: 34rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
-.file .note { margin: 0; color: var(--muted); font-size: 0.92rem; }
+.file .note, .task-body > .note { margin: 0; color: var(--muted); font-size: 0.92rem; }
 
 .empty { margin: 2.5rem 0; max-width: 46ch; color: var(--muted); }
 .empty strong { color: var(--ink); display: block; font-size: 1.15rem; margin-bottom: 0.25rem; }

@@ -11,7 +11,10 @@ const $ = (id) => document.getElementById(id);
 const state = { units: [], unit: "all", q: "", sort: "desc" };
 
 const fold = (text) => text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
-const fmtDate = (iso) => new Date(iso + "T00:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+const fmtDate = (iso) => {
+  const d = new Date(iso + "T00:00:00");
+  return isNaN(d) ? iso : d.toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+};
 const fmtSize = (b) => (b < 1024 ? `${b} B` : b < 1048576 ? `${(b / 1024).toFixed(0)} KB` : `${(b / 1048576).toFixed(1)} MB`);
 const md = (text) => DOMPurify.sanitize(marked.parse(text));
 
@@ -71,7 +74,7 @@ function matches(t) {
 function renderList() {
   const list = $("list");
   const dir = state.sort === "asc" ? 1 : -1;
-  const tasks = allTasks().filter(matches).sort((a, b) => dir * (a.date.localeCompare(b.date) || a.stamp.localeCompare(b.stamp)) || a.title.localeCompare(b.title, "es"));
+  const tasks = allTasks().filter(matches).sort((a, b) => dir * (a.date.localeCompare(b.date) || (a.stamp || "").localeCompare(b.stamp || "")) || a.title.localeCompare(b.title, "es"));
   list.replaceChildren();
   $("count").textContent = tasks.length ? `${tasks.length} ${tasks.length === 1 ? "tarea" : "tareas"}` : "";
 
@@ -136,6 +139,7 @@ function taskBody(t, files = t.files) {
   const body = el("div", { class: "task-body" });
   if (t.readme) body.append(el("div", { class: "readme", html: md(t.readme) }));
   for (const f of files) body.append(fileBlock(f));
+  if (!t.readme && !files.length) body.append(el("p", { class: "note" }, "Esta tarea todavía no tiene ningún archivo."));
   return body;
 }
 

@@ -21,6 +21,8 @@ ROOT = Path(__file__).resolve().parent
 TAREAS = ROOT / "tareas"
 OUT = ROOT / "data" / "tareas.json"
 
+UNIT_IDS = set()
+
 HIDDEN = {"info.json", "unidad.json", "readme.md", ".gitkeep", ".ds_store", "thumbs.db"}
 
 KINDS = {
@@ -44,6 +46,20 @@ def kind_of(path: Path) -> str:
         if ext in exts:
             return kind
     return "other"
+
+
+def slug(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+
+
+def unique(value: str, seen: set) -> str:
+    """Evita identificadores repetidos, que romperían los enlaces a cada tarea."""
+    out, n = value, 1
+    while out in seen:
+        n += 1
+        out = f"{value}-{n}"
+    seen.add(out)
+    return out
 
 
 def pretty(name: str) -> str:
@@ -93,8 +109,12 @@ def stamp_of(path: Path, info):
 
 
 def date_of(path: Path, prefix, info):
-    if info.get("fecha"):
-        return str(info["fecha"])
+    """Fecha en formato AAAA-MM-DD. Una fecha mal escrita a mano se ignora."""
+    fecha = str(info.get("fecha", ""))
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", fecha):
+        return fecha
+    if fecha:
+        print(f"  aviso: fecha no válida ({fecha!r}) en {path.name}; se usa otra")
     if prefix:
         return prefix
     return git_date(path) or datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d")
@@ -137,6 +157,11 @@ def split_summary(readme: str):
     return "", readme
 
 
+def task_base(path: Path) -> str:
+    """Nombre para el identificador: el de la carpeta entero, o el del archivo sin extensión."""
+    return path.name if path.is_dir() else path.stem
+
+
 def build_task(unit_id: str, path: Path) -> dict:
     if path.is_dir():
         prefix, rest = split_prefix(path.name, r"^(\d{4}-\d{2}-\d{2})[-_ ]+(.*)$")
@@ -153,7 +178,7 @@ def build_task(unit_id: str, path: Path) -> dict:
     if not summary:
         summary, readme = split_summary(readme)
     return {
-        "id": f"{unit_id}--{re.sub(r'[^a-z0-9]+', '-', path.stem.lower()).strip('-')}",
+        "id": f"{unit_id}--{slug(task_base(path))}",
         "title": info.get("titulo") or pretty(rest),
         "date": date_of(path, prefix, info),
         "stamp": stamp_of(path, info),
@@ -166,12 +191,15 @@ def build_task(unit_id: str, path: Path) -> dict:
 def build_unit(folder: Path) -> dict:
     tag, rest = split_prefix(folder.name, r"^(U[TD]\d+|\d+)[-_ ]+(.*)$")
     info = read_json(folder / "unidad.json")
-    unit_id = re.sub(r"[^a-z0-9]+", "-", folder.name.lower()).strip("-")
-    tasks = [
-        build_task(unit_id, p)
-        for p in folder.iterdir()
-        if p.name.lower() not in HIDDEN and not p.name.startswith(".")
-    ]
+    unit_id = unique(slug(folder.name), UNIT_IDS)
+    seen = set()
+    tasks = []
+    for p in sorted(folder.iterdir(), key=lambda p: p.name.lower()):
+        if p.name.lower() in HIDDEN or p.name.startswith("."):
+            continue
+        t = build_task(unit_id, p)
+        t["id"] = unique(t["id"], seen)
+        tasks.append(t)
     tasks.sort(key=lambda t: (t["date"], t["stamp"]), reverse=True)
     return {
         "id": unit_id,

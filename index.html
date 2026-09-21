@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <link rel="stylesheet" href="style.css?v=cfeb9572">
+  <link rel="stylesheet" href="style.css?v=4e69e5fe">
 </head>
 <body>
   <a class="skip" href="#tareas">Saltar a las tareas</a>
@@ -46,7 +46,7 @@
         <ul id="units" class="tree-list"></ul>
       </aside>
 
-      <section id="tareas" class="content" aria-live="polite">
+      <section id="tareas" class="content">
         <div class="tools">
           <label class="search">
             <span class="sr">Buscar tarea por nombre</span>
@@ -61,7 +61,7 @@
             </select>
           </label>
         </div>
-        <p id="count" class="count"></p>
+        <p id="count" class="count" role="status" aria-live="polite"></p>
         <div id="list"></div>
       </section>
     </div>
@@ -81,6 +81,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
-  <script src="app.js?v=cfeb9572"></script>
+  <script src="app.js?v=4e69e5fe"></script>
 </body>
 </html>
