@@ -96,7 +96,11 @@ body {
   background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.65rem 0.9rem;
 }
 .search input::placeholder { color: var(--muted); }
-.kinds { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.sort select {
+  font: inherit; font-size: 1rem; color: var(--ink); cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.65rem 0.9rem;
+}
+.kinds { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .kinds button {
   font: inherit; font-size: 0.9rem; cursor: pointer; color: var(--ink);
   background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 0.3rem 0.8rem;
@@ -106,10 +110,8 @@ body {
 .count { margin: 1rem 0 0.25rem; color: var(--muted); font-size: 0.95rem; }
 
 /* Tareas */
-.group-title { margin: 2rem 0 0; font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
-.group-title:first-child { margin-top: 0.5rem; }
 .task { border-bottom: 1px solid var(--line); }
-.group-title + .task, .count + div > .task:first-child { border-top: 1px solid var(--line); }
+.count + div > .task:first-child { border-top: 1px solid var(--line); }
 .task > summary {
   list-style: none; cursor: pointer;
   display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) auto; gap: 1rem; align-items: baseline;
@@ -118,6 +120,7 @@ body {
 .task > summary::-webkit-details-marker { display: none; }
 .task > summary:hover .t-title { color: var(--accent); }
 .t-date { color: var(--muted); font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+.t-unit { display: block; margin-top: 0.15rem; font-size: 0.85rem; color: var(--ink); opacity: 0.75; }
 .t-title { font-size: 1.2rem; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; }
 .t-sum { display: block; margin-top: 0.15rem; font-size: 0.95rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
 .t-kinds { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: flex-end; }

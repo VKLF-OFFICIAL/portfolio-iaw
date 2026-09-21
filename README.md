@@ -2,7 +2,13 @@
 
 Web estática publicada con GitHub Pages. URL: https://vklf-official.github.io/portfolio-iaw/
 
-## Añadir una tarea
+## Añadir una tarea (forma fácil)
+
+Arrastra tus archivos (o una carpeta) sobre **`subir.bat`**, o haz doble clic y pega la ruta.
+Te pregunta la unidad, el título, la fecha y una descripción opcional; crea la carpeta, copia los
+archivos, hace commit y sube todo a GitHub. La web se actualiza en 1 o 2 minutos.
+
+## Añadir una tarea a mano
 
 1. Crea una carpeta dentro de la unidad: `tareas/UT1-Servidores-Web/2026-10-03-Apache-virtualhost/`
    (el prefijo `AAAA-MM-DD-` es la fecha; si falta, se usa la fecha del primer commit).

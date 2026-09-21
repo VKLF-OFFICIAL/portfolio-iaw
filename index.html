@@ -40,6 +40,13 @@
             <span class="sr">Buscar tareas</span>
             <input id="q" type="search" placeholder="Buscar por título, archivo o texto" autocomplete="off">
           </label>
+          <label class="sort">
+            <span class="sr">Ordenar por fecha</span>
+            <select id="sort">
+              <option value="desc">Más recientes primero</option>
+              <option value="asc">Más antiguas primero</option>
+            </select>
+          </label>
           <div id="kinds" class="kinds" role="group" aria-label="Filtrar por tipo de archivo"></div>
         </div>
         <p id="count" class="count"></p>

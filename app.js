@@ -3,7 +3,7 @@ const LANGS = { sh: "bash", bash: "bash", ps1: "powershell", bat: "dos", cmd: "d
 const MAX_PREVIEW = 60 * 1024;
 
 const $ = (id) => document.getElementById(id);
-const state = { units: [], unit: "all", kind: "all", q: "" };
+const state = { units: [], unit: "all", kind: "all", q: "", sort: "desc" };
 
 const fmtDate = (iso) => new Date(iso + "T00:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
 const fmtSize = (b) => (b < 1024 ? `${b} B` : b < 1048576 ? `${(b / 1024).toFixed(0)} KB` : `${(b / 1048576).toFixed(1)} MB`);
@@ -37,6 +37,7 @@ async function init() {
   renderUnits();
   renderKinds();
   $("q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); renderList(); });
+  $("sort").addEventListener("change", (e) => { state.sort = e.target.value; renderList(); });
   renderList();
   openFromHash();
 }
@@ -76,7 +77,8 @@ function matches(t) {
 
 function renderList() {
   const list = $("list");
-  const tasks = allTasks().filter(matches);
+  const dir = state.sort === "asc" ? 1 : -1;
+  const tasks = allTasks().filter(matches).sort((a, b) => dir * a.date.localeCompare(b.date) || a.title.localeCompare(b.title, "es"));
   list.replaceChildren();
   $("count").textContent = tasks.length ? `${tasks.length} ${tasks.length === 1 ? "tarea" : "tareas"}` : "";
 
@@ -88,21 +90,14 @@ function renderList() {
     return;
   }
 
-  let last = null;
-  for (const t of tasks) {
-    if (state.unit === "all" && t.unit.id !== last) {
-      list.append(el("h2", { class: "group-title" }, (t.unit.tag ? t.unit.tag + " " : "") + t.unit.title));
-      last = t.unit.id;
-    }
-    list.append(taskRow(t));
-  }
+  for (const t of tasks) list.append(taskRow(t));
 }
 
 function taskRow(t) {
   const kinds = [...new Set(t.files.map((f) => f.kind))];
   const d = el("details", { class: "task", id: t.id },
     el("summary", {},
-      el("span", { class: "t-date" }, fmtDate(t.date)),
+      el("span", { class: "t-date" }, fmtDate(t.date), el("span", { class: "t-unit" }, (t.unit.tag ? t.unit.tag + " " : "") + t.unit.title)),
       el("span", { class: "t-title" }, t.title, t.summary ? el("span", { class: "t-sum" }, t.summary) : null),
       el("span", { class: "t-kinds" }, ...kinds.map((k) => el("span", { class: "chip" }, KIND_LABELS[k])))));
   d.addEventListener("toggle", () => {
