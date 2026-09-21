@@ -8,8 +8,9 @@ const ICONS = {
 };
 
 const $ = (id) => document.getElementById(id);
-const state = { units: [], unit: "all", kind: "all", q: "", sort: "desc" };
+const state = { units: [], unit: "all", q: "", sort: "desc" };
 
+const fold = (text) => text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const fmtDate = (iso) => new Date(iso + "T00:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
 const fmtSize = (b) => (b < 1024 ? `${b} B` : b < 1048576 ? `${(b / 1024).toFixed(0)} KB` : `${(b / 1048576).toFixed(1)} MB`);
 const md = (text) => DOMPurify.sanitize(marked.parse(text));
@@ -42,8 +43,7 @@ async function init() {
 
   state.units = data.units;
   renderUnits();
-  renderKinds();
-  $("q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); renderList(); });
+  $("q").addEventListener("input", (e) => { state.q = fold(e.target.value.trim()); renderList(); });
   $("sort").addEventListener("change", (e) => { state.sort = e.target.value; renderList(); });
   renderList();
   openFromHash();
@@ -62,24 +62,10 @@ function renderUnits() {
   }
 }
 
-function renderKinds() {
-  const present = new Set(allTasks().flatMap((t) => t.files.map((f) => f.kind)));
-  const box = $("kinds");
-  box.replaceChildren();
-  const kinds = ["all", ...Object.keys(KIND_LABELS).filter((k) => present.has(k))];
-  if (kinds.length < 3) return;
-  for (const k of kinds) {
-    const b = el("button", { type: "button", class: "btn btn-sm", "aria-pressed": String(state.kind === k) }, k === "all" ? "Todos" : KIND_LABELS[k]);
-    b.addEventListener("click", () => { state.kind = k; renderKinds(); renderList(); });
-    box.append(b);
-  }
-}
-
 function matches(t) {
   if (state.unit !== "all" && t.unit.id !== state.unit) return false;
-  if (state.kind !== "all" && !t.files.some((f) => f.kind === state.kind)) return false;
   if (!state.q) return true;
-  return [t.title, t.summary, t.readme, ...t.files.map((f) => f.name)].join(" ").toLowerCase().includes(state.q);
+  return fold(t.title).includes(state.q);
 }
 
 function renderList() {

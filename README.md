@@ -4,9 +4,16 @@ Web estática publicada con GitHub Pages. URL: https://vklf-official.github.io/p
 
 ## Añadir una tarea (forma fácil)
 
-Arrastra tus archivos (o una carpeta) sobre **`subir.bat`**, o haz doble clic y pega la ruta.
-Te pregunta la unidad, el título, la fecha y una descripción opcional; crea la carpeta, copia los
-archivos, hace commit y sube todo a GitHub. La web se actualiza en 1 o 2 minutos.
+Haz doble clic en **`subir.bat`** (o arrastra el PDF sobre él). Te pregunta, en este orden:
+
+1. ¿El tema es nuevo o ya existe? (`N` o `E`)
+2. Si es nuevo, su nombre (se numera solo: UT1, UT2…). Si existe, te muestra la lista y eliges un número.
+3. El nombre de la tarea.
+4. Una descripción breve (opcional; se muestra bajo el título).
+5. El PDF (arrástralo a la ventana o escribe su ruta).
+
+Después crea la carpeta, la sube a GitHub y la web se actualiza en 1 o 2 minutos.
+La fecha de la tarea es la de hoy.
 
 ## Añadir una tarea a mano
 
