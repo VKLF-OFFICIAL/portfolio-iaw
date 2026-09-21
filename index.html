@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio · Implantación de Aplicaciones Web</title>
+  <meta name="description" content="Tareas y prácticas del módulo Implantación de Aplicaciones Web.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#tareas">Saltar a las tareas</a>
+
+  <header class="top">
+    <div class="wrap top-inner">
+      <span id="nombre" class="logo"></span>
+      <a id="github" class="top-link" href="#" rel="noopener">GitHub</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1 id="modulo"></h1>
+      <p id="intro" class="lead"></p>
+      <p id="centro" class="centro"></p>
+    </section>
+
+    <div class="layout">
+      <aside class="tree" aria-label="Unidades">
+        <p class="tree-root">tareas/</p>
+        <ul id="units" class="tree-list"></ul>
+      </aside>
+
+      <section id="tareas" class="content" aria-live="polite">
+        <div class="tools">
+          <label class="search">
+            <span class="sr">Buscar tareas</span>
+            <input id="q" type="search" placeholder="Buscar por título, archivo o texto" autocomplete="off">
+          </label>
+          <div id="kinds" class="kinds" role="group" aria-label="Filtrar por tipo de archivo"></div>
+        </div>
+        <p id="count" class="count"></p>
+        <div id="list"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="wrap foot">
+    <p id="foot"></p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
