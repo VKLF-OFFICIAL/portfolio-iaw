@@ -121,7 +121,8 @@ try {
     if (Test-Path $carpeta) { throw "Ya existe una tarea con ese nombre y fecha: $carpeta" }
     New-Item -ItemType Directory -Force $carpeta | Out-Null
     foreach ($p in $pdfs) { Copy-Item -LiteralPath $p -Destination $carpeta }
-    $info = [ordered]@{ titulo = $Titulo; fecha = $Fecha }
+    # "subida" (UTC, con segundos) no se muestra en la web: solo sirve para ordenar tareas del mismo día
+    $info = [ordered]@{ titulo = $Titulo; fecha = $Fecha; subida = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ss') + 'Z' }
     if ($Descripcion) { $info.descripcion = $Descripcion }
     [IO.File]::WriteAllText((Join-Path $carpeta 'info.json'), ($info | ConvertTo-Json), (New-Object Text.UTF8Encoding $false))
 

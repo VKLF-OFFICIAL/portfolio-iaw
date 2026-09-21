@@ -71,7 +71,7 @@ function matches(t) {
 function renderList() {
   const list = $("list");
   const dir = state.sort === "asc" ? 1 : -1;
-  const tasks = allTasks().filter(matches).sort((a, b) => dir * a.date.localeCompare(b.date) || a.title.localeCompare(b.title, "es"));
+  const tasks = allTasks().filter(matches).sort((a, b) => dir * (a.date.localeCompare(b.date) || a.stamp.localeCompare(b.stamp)) || a.title.localeCompare(b.title, "es"));
   list.replaceChildren();
   $("count").textContent = tasks.length ? `${tasks.length} ${tasks.length === 1 ? "tarea" : "tareas"}` : "";
 

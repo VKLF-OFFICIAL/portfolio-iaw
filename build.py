@@ -13,7 +13,7 @@ import hashlib
 import json
 import re
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
 
@@ -64,6 +64,32 @@ def git_date(path: Path):
         return out[-1][:10] if out else None
     except (OSError, subprocess.CalledProcessError):
         return None
+
+
+def to_utc(iso: str) -> str:
+    return datetime.fromisoformat(iso).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def git_stamp(path: Path):
+    """Momento (UTC, con segundos) en que se añadió la tarea al repositorio, o None."""
+    try:
+        out = subprocess.run(
+            ["git", "log", "--format=%aI", "--", str(path)],
+            cwd=ROOT, capture_output=True, text=True, check=True,
+        ).stdout.split()
+        return to_utc(out[-1]) if out else None
+    except (OSError, subprocess.CalledProcessError, ValueError):
+        return None
+
+
+def stamp_of(path: Path, info):
+    """Hora de subida: la de info.json; si no, la del primer commit; si no, la del archivo."""
+    if info.get("subida"):
+        try:
+            return to_utc(str(info["subida"]).replace("Z", "+00:00"))
+        except ValueError:
+            pass
+    return git_stamp(path) or datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def date_of(path: Path, prefix, info):
@@ -130,6 +156,7 @@ def build_task(unit_id: str, path: Path) -> dict:
         "id": f"{unit_id}--{re.sub(r'[^a-z0-9]+', '-', path.stem.lower()).strip('-')}",
         "title": info.get("titulo") or pretty(rest),
         "date": date_of(path, prefix, info),
+        "stamp": stamp_of(path, info),
         "summary": summary,
         "readme": readme,
         "files": [file_entry(f) for f in files],
@@ -145,7 +172,7 @@ def build_unit(folder: Path) -> dict:
         for p in folder.iterdir()
         if p.name.lower() not in HIDDEN and not p.name.startswith(".")
     ]
-    tasks.sort(key=lambda t: t["date"], reverse=True)
+    tasks.sort(key=lambda t: (t["date"], t["stamp"]), reverse=True)
     return {
         "id": unit_id,
         "tag": info.get("etiqueta") or tag or "",
