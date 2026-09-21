@@ -40,9 +40,9 @@ Para crear una unidad nueva, crea una carpeta en `tareas/` con nombre `UD2-Nombr
 Haz doble clic en **`borrar.bat`** (o usa el acceso directo del Escritorio). Te pregunta:
 
 1. ¿Qué borrar? `T` = tareas, `M` = un tema entero con todas sus tareas.
-2. El tema (lista numerada).
-3. Si son tareas: cuáles (un número, varios separados por comas como `1,3`, o `todas`).
-4. Confirmación: hay que escribir `SI`. Con Enter se cancela y no se borra nada.
+2. Con `T`: lista todas las tareas agrupadas por tema y eliges cuáles (un número, varios
+   separados por comas como `1,3`, o `todas`). Con `M`: eliges el tema de una lista.
+3. Confirmación: hay que escribir `SI`. Con Enter se cancela y no se borra nada.
 
 Después lo borra de tu carpeta y lo publica. Si un tema se queda sin tareas, se elimina también.
 Lo borrado sigue existiendo en el historial de git de GitHub.
