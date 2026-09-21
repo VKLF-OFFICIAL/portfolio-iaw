@@ -97,7 +97,7 @@ function taskRow(t) {
   const kinds = [...new Set(t.files.map((f) => f.kind))];
   const d = el("details", { class: "task", id: t.id },
     el("summary", {},
-      el("span", { class: "t-date" }, fmtDate(t.date), el("span", { class: "t-unit" }, (t.unit.tag ? t.unit.tag + " " : "") + t.unit.title)),
+      el("span", { class: "t-date" }, fmtDate(t.date), el("span", { class: "t-unit", title: t.unit.title }, t.unit.tag || t.unit.title)),
       el("span", { class: "t-title" }, t.title, t.summary ? el("span", { class: "t-sum" }, t.summary) : null),
       el("span", { class: "t-kinds" }, ...kinds.map((k) => el("span", { class: "chip" }, KIND_LABELS[k])))));
   d.addEventListener("toggle", () => {
