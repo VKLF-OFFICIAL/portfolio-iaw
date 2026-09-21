@@ -57,9 +57,13 @@ const allTasks = () => state.units.flatMap((u) => u.tasks.map((t) => ({ ...t, un
 function renderUnits() {
   const ul = $("units");
   ul.replaceChildren();
-  const items = [{ id: "all", title: "todas", count: allTasks().length }, ...state.units.map((u) => ({ id: u.id, title: (u.tag ? u.tag + " " : "") + u.title, count: u.tasks.length }))];
+  const items = [{ id: "all", title: "Todas las tareas", count: allTasks().length },
+    ...state.units.map((u) => ({ id: u.id, tag: u.tag, title: u.title, count: u.tasks.length }))];
   for (const it of items) {
-    const b = el("button", { type: "button", title: it.title, "aria-pressed": String(state.unit === it.id) }, el("span", {}, it.title), el("span", { class: "n" }, String(it.count)));
+    const b = el("button", { type: "button", title: (it.tag ? it.tag + " " : "") + it.title, "aria-pressed": String(state.unit === it.id) },
+      it.tag ? el("span", { class: "u-tag" }, it.tag) : null,
+      el("span", { class: "u-name" }, it.title),
+      el("span", { class: "n" }, String(it.count)));
     b.addEventListener("click", () => { state.unit = it.id; renderUnits(); renderList(); });
     ul.append(el("li", {}, b));
   }
