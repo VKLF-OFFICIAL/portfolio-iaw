@@ -77,9 +77,12 @@ try {
     # 2. Nombre del tema nuevo, o selección de uno existente
     if ($Modo -eq 'nuevo') {
         if (-not $Tema) { $Tema = AskRequired 'Nombre del tema nuevo' }
-        $numeros = @($temas | ForEach-Object { if ($_.Name -match '^UT(\d+)') { [int]$Matches[1] } })
+        # Si el nombre ya empieza por UD1, UT2, UD-3... se quita: el número se pone solo
+        $Tema = $Tema -replace '^\s*U[TD]\s*-?\s*\d+\s*[-:.\s]*', ''
+        if (-not (Slug $Tema)) { throw 'El nombre del tema debe tener letras o números.' }
+        $numeros = @($temas | ForEach-Object { if ($_.Name -match '^U[TD](\d+)') { [int]$Matches[1] } })
         $siguiente = if ($numeros.Count) { ($numeros | Measure-Object -Maximum).Maximum + 1 } else { 1 }
-        $carpetaTema = Slug "UT$siguiente $Tema"
+        $carpetaTema = Slug "UD$siguiente $Tema"
     } else {
         if ($temas.Count -eq 0) { throw 'No hay temas existentes. Usa un tema nuevo.' }
         if (-not $Tema) {

@@ -137,7 +137,7 @@ def build_task(unit_id: str, path: Path) -> dict:
 
 
 def build_unit(folder: Path) -> dict:
-    tag, rest = split_prefix(folder.name, r"^(UT\d+|\d+)[-_ ]+(.*)$")
+    tag, rest = split_prefix(folder.name, r"^(U[TD]\d+|\d+)[-_ ]+(.*)$")
     info = read_json(folder / "unidad.json")
     unit_id = re.sub(r"[^a-z0-9]+", "-", folder.name.lower()).strip("-")
     tasks = [

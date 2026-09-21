@@ -7,7 +7,7 @@ Web estática publicada con GitHub Pages. URL: https://vklf-official.github.io/p
 Haz doble clic en **`subir.bat`** (o arrastra el PDF sobre él). Te pregunta, en este orden:
 
 1. ¿El tema es nuevo o ya existe? (`N` o `E`)
-2. Si es nuevo, su nombre (se numera solo: UT1, UT2…). Si existe, te muestra la lista y eliges un número.
+2. Si es nuevo, su nombre (se numera solo: UD1, UD2…). Si existe, te muestra la lista y eliges un número.
 3. El nombre de la tarea.
 4. Una descripción breve (opcional; se muestra bajo el título).
 5. El PDF (arrástralo a la ventana o escribe su ruta).
@@ -17,7 +17,7 @@ La fecha de la tarea es la de hoy.
 
 ## Añadir una tarea a mano
 
-1. Crea una carpeta dentro de la unidad: `tareas/UT1-Servidores-Web/2026-10-03-Apache-virtualhost/`
+1. Crea una carpeta dentro de la unidad: `tareas/UD1-Servidores-Web/2026-10-03-Apache-virtualhost/`
    (el prefijo `AAAA-MM-DD-` es la fecha; si falta, se usa la fecha del primer commit).
 2. Copia dentro tus archivos: scripts, capturas, PDF, vídeos, configuraciones…
 3. Opcional: añade un `README.md` con la explicación (admite Markdown; su primer párrafo sale como resumen)
@@ -33,7 +33,7 @@ La fecha de la tarea es la de hoy.
    ```
 
 Un archivo suelto dentro de una unidad (sin carpeta) cuenta como una tarea.
-Para crear una unidad nueva, crea una carpeta en `tareas/` con nombre `UT2-Nombre-de-la-unidad`.
+Para crear una unidad nueva, crea una carpeta en `tareas/` con nombre `UD2-Nombre-de-la-unidad`.
 
 ## Ver la web en tu PC
 
