@@ -103,7 +103,7 @@ try {
 
     # 3. Nombre de la tarea
     Write-Host ''
-    if (-not $Titulo) { $Titulo = AskRequired 'Nombre de la tarea (ej. Tarea 2: Instalación de Apache)' }
+    if (-not $Titulo) { $Titulo = AskRequired 'Nombre de la tarea' }
     if (-not (Slug $Titulo)) { throw 'El nombre de la tarea debe tener letras o números.' }
     if ($Fecha -notmatch '^\d{4}-\d{2}-\d{2}$') { throw "La fecha debe ser AAAA-MM-DD, no '$Fecha'." }
 
