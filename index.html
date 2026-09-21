@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Portfolio · Implantación de Aplicaciones Web</title>
   <meta name="description" content="Tareas y prácticas del módulo Implantación de Aplicaciones Web.">
+  <script>try { if (localStorage.getItem("theme") === "dark") document.documentElement.dataset.theme = "dark"; } catch (e) {}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -17,7 +18,10 @@
   <header class="top">
     <div class="wrap top-inner">
       <span id="nombre" class="logo"></span>
-      <a id="github" class="top-link" href="#" rel="noopener">GitHub</a>
+      <div class="top-actions">
+        <button id="theme" class="theme-btn" type="button">Modo oscuro</button>
+        <a id="github" class="top-link" href="#" rel="noopener">GitHub</a>
+      </div>
     </div>
   </header>
 

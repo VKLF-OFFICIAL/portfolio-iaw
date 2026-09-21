@@ -93,13 +93,23 @@ function renderList() {
   for (const t of tasks) list.append(taskRow(t));
 }
 
-function taskRow(t) {
+function rowCells(t) {
   const kinds = [...new Set(t.files.map((f) => f.kind))];
-  const d = el("details", { class: "task", id: t.id },
-    el("summary", {},
-      el("span", { class: "t-date" }, fmtDate(t.date), el("span", { class: "t-unit", title: t.unit.title }, t.unit.tag || t.unit.title)),
-      el("span", { class: "t-title" }, t.title, t.summary ? el("span", { class: "t-sum" }, t.summary) : null),
-      el("span", { class: "t-kinds" }, ...kinds.map((k) => el("span", { class: "chip" }, KIND_LABELS[k])))));
+  return [
+    el("span", { class: "t-date" }, fmtDate(t.date), el("span", { class: "t-unit", title: t.unit.title }, t.unit.tag || t.unit.title)),
+    el("span", { class: "t-title" }, t.title, t.summary ? el("span", { class: "t-sum" }, t.summary) : null),
+    el("span", { class: "t-kinds" }, ...kinds.map((k) => el("span", { class: k === "pdf" ? "chip chip-pdf" : "chip" }, KIND_LABELS[k]))),
+  ];
+}
+
+// Una tarea con PDF: el clic en la fila abre el PDF; el botón despliega el resto.
+function taskRow(t) {
+  const pdf = t.files.find((f) => f.kind === "pdf");
+  return pdf ? pdfRow(t, pdf) : detailsRow(t);
+}
+
+function detailsRow(t) {
+  const d = el("details", { class: "task", id: t.id }, el("summary", {}, ...rowCells(t)));
   d.addEventListener("toggle", () => {
     if (!d.open || d.querySelector(".task-body")) return;
     d.append(taskBody(t));
@@ -108,10 +118,30 @@ function taskRow(t) {
   return d;
 }
 
-function taskBody(t) {
+function pdfRow(t, pdf) {
+  const rest = t.files.filter((f) => f !== pdf);
+  const row = el("div", { class: "task task-pdf", id: t.id },
+    el("div", { class: "t-bar" },
+      el("a", { class: "t-row", href: pdf.url, target: "_blank", rel: "noopener", title: "Abrir el PDF en una pestaña nueva" }, ...rowCells(t))));
+  if (!rest.length && !t.readme) return row;
+
+  const btn = el("button", { type: "button", class: "t-toggle", "aria-expanded": "false" }, "Detalles");
+  btn.addEventListener("click", () => {
+    const open = btn.getAttribute("aria-expanded") === "true";
+    btn.setAttribute("aria-expanded", String(!open));
+    btn.textContent = open ? "Detalles" : "Ocultar";
+    let body = row.querySelector(".task-body");
+    if (!body) row.append((body = taskBody(t, rest)));
+    body.hidden = open;
+  });
+  row.firstChild.append(btn);
+  return row;
+}
+
+function taskBody(t, files = t.files) {
   const body = el("div", { class: "task-body" });
   if (t.readme) body.append(el("div", { class: "readme", html: md(t.readme) }));
-  for (const f of t.files) body.append(fileBlock(f));
+  for (const f of files) body.append(fileBlock(f));
   return body;
 }
 
@@ -143,7 +173,26 @@ function fileBlock(f) {
 function openFromHash() {
   const id = decodeURIComponent(location.hash.slice(1));
   const node = id && document.getElementById(id);
-  if (node && node.tagName === "DETAILS") { node.open = true; node.scrollIntoView({ block: "start" }); }
+  if (!node) return;
+  if (node.tagName === "DETAILS") node.open = true;
+  else node.querySelector(".t-toggle")?.click();
+  node.scrollIntoView({ block: "start" });
 }
+
+function initTheme() {
+  const btn = $("theme");
+  const apply = (dark) => {
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    btn.textContent = dark ? "Modo claro" : "Modo oscuro";
+  };
+  apply(document.documentElement.dataset.theme === "dark");
+  btn.addEventListener("click", () => {
+    const dark = document.documentElement.dataset.theme !== "dark";
+    apply(dark);
+    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch {}
+  });
+}
+
+initTheme();
 
 init();
