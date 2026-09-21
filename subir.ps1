@@ -40,9 +40,22 @@ function Invoke-Git {
 function TemaLegible([string]$folder) { $folder -replace '-', ' ' }
 
 try {
-    Set-Location $PSScriptRoot
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) { throw 'No encuentro git. Instálalo desde https://git-scm.com' }
-    $tareas = Join-Path $PSScriptRoot 'tareas'
+
+    # El script debe trabajar dentro del repositorio del portfolio. Si se ejecuta desde otra
+    # carpeta (por ejemplo Descargas), busca el portfolio en la carpeta de usuario.
+    $repo = $PSScriptRoot
+    if (-not (Test-Path (Join-Path $repo '.git'))) {
+        $candidato = Join-Path $env:USERPROFILE 'portfolio-iaw'
+        if (Test-Path (Join-Path $candidato '.git')) {
+            $repo = $candidato
+            Write-Host "Usando el portfolio de: $repo" -ForegroundColor DarkGray
+        } else {
+            throw "Este script tiene que estar en la carpeta del portfolio (la que contiene .git), y ahora está en: $PSScriptRoot"
+        }
+    }
+    Set-Location $repo
+    $tareas = Join-Path $repo 'tareas'
     New-Item -ItemType Directory -Force $tareas | Out-Null
 
     Write-Host ''
@@ -110,7 +123,7 @@ try {
     [IO.File]::WriteAllText((Join-Path $carpeta 'info.json'), ($info | ConvertTo-Json), (New-Object Text.UTF8Encoding $false))
 
     Write-Host ''
-    Write-Host "Tarea creada en: $($carpeta.Replace($PSScriptRoot + '\', ''))" -ForegroundColor Green
+    Write-Host "Tarea creada en: $($carpeta.Replace($repo + '\', ''))" -ForegroundColor Green
 
     # 6. Publicar
     if ($SinSubir) { Write-Host 'Modo prueba: no se ha subido nada a GitHub.'; exit 0 }
