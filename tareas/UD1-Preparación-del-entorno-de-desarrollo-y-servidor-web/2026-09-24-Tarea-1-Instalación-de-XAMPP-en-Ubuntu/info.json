@@ -1,6 +1,0 @@
-{
-    "titulo":  "Tarea 1: Instalación de XAMPP en Ubuntu",
-    "fecha":  "2026-09-24",
-    "subida":  "2026-09-24T20:29:28Z",
-    "descripcion":  "En esta práctica se lleva a cabo la creación de una máquina virtual con una distribución Linux, como Ubuntu, junto con la correspondiente actualización de los paquetes del sistema. A continuación, se instala y gestiona el servidor web Apache, modificando sus archivos de configuración para cambiar el puerto de escucha, el directorio de alojamiento por defecto y establecer alias para los directorios de trabajo. Posteriormente, se instala el sistema gestor de bases de datos MySQL o MariaDB, ejecutando un script de seguridad para configurar la contraseña del usuario administrador o root. Finalmente, se procede a la instalación del intérprete PHP y sus módulos para integrarlo tanto con Apache como con la base de datos."
-}
